@@ -8,4 +8,4 @@
 #schedule-grid .period-label{position:sticky;left:0;z-index:4;background:var(--white);border-right:1px solid var(--border);box-shadow:3px 0 5px #123c3508}
 #schedule-grid .grid-header:first-child{left:0;z-index:6;border-right:1px solid var(--border);box-shadow:3px 0 5px #123c3508}
 
-.course-block.inactive-course{background:#dce1df;color:#63716b;border-color:#c4ccc8;border-style:dashed}.course-block.inactive-course strong{color:#53615b}.course-block.inactive-course span{color:#63716b}
+.course-block.inactive-course{background:#eeeeee;color:#707070;border-color:#d0d0d0;border-style:dashed}.course-block.inactive-course strong{color:#606060}.course-block.inactive-course span{color:#707070}
