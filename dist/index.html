@@ -32,6 +32,16 @@
     <section id="today-view" class="view" hidden><div class="page-heading"><div><span class="eyebrow" id="today-date"></span><h1>今日课程</h1></div></div><div id="today-content"></div></section>
     <section id="import-view" class="view" hidden><div class="page-heading"><div><span class="eyebrow">文件导入</span><h1>把课表带进来</h1></div></div>
       <div class="import-grid"><div class="panel upload-panel"><span class="upload-symbol" data-icon="upload"></span><h2>选择你的课表文件</h2><p>PDF、图片、Excel、CSV、ICS 或 JSON</p><label class="file-button" for="file-input">选择 PDF 或截图<input id="file-input" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.xlsx,.xls,.csv,.ics,.json,image/*"></label><span class="small-note">在本设备处理，不上传课表文件 · 最大 20 MB</span></div><div class="panel import-notes"><h2>导入前，先校对</h2><p>PDF 和图片按常见七列课表的布局解析。其他学校的表格位置不同，可能需要手动修正。</p><p>同一门课换教室、教师或周次，会保留为不同的安排。</p><button id="load-sample" class="secondary-button">加载示例课表</button><button id="download-template" class="text-button">下载 Excel / CSV 模板</button></div></div>
+<div class="panel app-import-panel">
+ <h2>从微信、QQ、WPS 导入</h2>
+ <p>先将课表附件保存到手机，再选择文件。支持 PDF、截图和 Excel；无需登录这些应用。</p>
+ <div class="app-import-options">
+  <details class="app-import-guide"><summary><span class="source-badge source-wechat">微</span><span>微信文件<span class="source-subtitle">聊天里的 PDF、表格和截图</span></span></summary><ol><li>在微信里打开课表附件，找右上角的“…”或分享入口。</li><li>查找“用其他应用打开”或“分享”，在系统分享菜单中选择“存储到‘文件’”。各版本菜单名称可能不同。</li><li>保存到“我的 iPhone”或 iCloud 云盘，回到这里选择刚保存的文件。</li></ol><p class="small-note">如果只有课表图片，可先保存图片到相册，再选择照片导入。</p><button type="button" class="primary-button" data-source-import="微信" onclick="document.getElementById('file-input').click()">选择已保存的微信文件</button></details>
+  <details class="app-import-guide"><summary><span class="source-badge source-qq">QQ</span><span>QQ 文件<span class="source-subtitle">聊天附件和下载的课表</span></span></summary><ol><li>在 QQ 中打开并下载课表附件。</li><li>在文件菜单中查找“分享”或“其他应用打开”，选择“存储到‘文件’”。各版本菜单名称可能不同。</li><li>回到这里选择保存的 PDF、Excel 或图片。</li></ol><button type="button" class="primary-button" data-source-import="QQ" onclick="document.getElementById('file-input').click()">选择已保存的 QQ 文件</button></details>
+  <details class="app-import-guide"><summary><span class="source-badge source-wps">W</span><span>WPS 文档<span class="source-subtitle">导出 PDF 或 Excel 后导入</span></span></summary><ol><li>在 WPS 打开课表，通过“分享”或“导出”选择 PDF 或 Excel（.xlsx / .xls）。具体入口随版本不同。</li><li>将导出的文件保存到“文件”App，再回到这里选择。</li><li>Excel 需要“课程、星期、开始节、结束节、周次”表头；排版复杂的课表可优先导出 PDF。</li></ol><p class="small-note">暂不直接识别 Word（.doc / .docx）或 WPS 专有格式，请先导出 PDF。</p><button type="button" class="primary-button" data-source-import="WPS" onclick="document.getElementById('file-input').click()">选择 WPS 导出的文件</button></details>
+ </div>
+ <p class="small-note">在微信或 QQ 内置浏览器中选不了文件？请复制课表网址，用 Safari 打开。手机文件位置可查看 <a href="https://support.apple.com/zh-cn/102570" target="_blank" rel="noopener">Apple 的文件查找说明</a>。</p>
+</div>
       <div id="import-progress" class="notice" hidden role="status"></div><div id="import-error" class="error-message" hidden role="alert"></div><div id="import-preview"></div>
     </section>
     <section id="settings-view" class="view" hidden><div class="page-heading"><div><span class="eyebrow">个人设置</span><h1>让课表合你的节奏</h1></div></div>
