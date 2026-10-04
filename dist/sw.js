@@ -1,4 +1,4 @@
-const CACHE='campus-schedule-shell-v5';
+const CACHE='campus-schedule-shell-v6';
 const SHELL=['./','./index.html','./styles.css','./app.js?v=2','./core.js','./importers.js?v=3','./sample.json','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(async cache=>{for(const path of SHELL){const response=await fetch(path);if(response.ok&&!response.redirected)await cache.put(path,response);}}).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('campus-schedule-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
