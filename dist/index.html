@@ -44,5 +44,16 @@
 <dialog id="help-dialog"><div class="dialog-heading"><h2>添加到 iPhone 主屏幕</h2><button class="icon-button" data-close-dialog aria-label="关闭"><span data-icon="close"></span></button></div><ol class="install-steps"><li>在 iPhone 的 Safari 中打开本页。</li><li>点击“分享”，选择“添加到主屏幕”。</li><li>名称保留“校园课表”，点击“添加”。</li></ol><p>如果 Safari 显示“作为网页 App 打开”，保持开启。添加后从主屏幕打开，核对课表数据；必要时导入 JSON 备份。</p><button class="primary-button" data-close-dialog>知道了</button></dialog>
 <dialog id="confirm-dialog"><h2>删除这条安排？</h2><p>删除后可以通过备份恢复。</p><div class="dialog-actions"><button id="cancel-delete" class="secondary-button">取消</button><button id="confirm-delete" class="danger-button">删除</button></div></dialog>
 <div id="toast" role="status" hidden></div>
+<script>
+// Keep navigation usable while application files are loading.
+document.querySelectorAll('[data-tab]').forEach(function(button){
+ button.addEventListener('click',function(){
+  var tab=button.dataset.tab;
+  document.querySelectorAll('.view').forEach(function(view){view.hidden=view.id!==tab+'-view';});
+  document.querySelectorAll('[data-tab]').forEach(function(item){item.classList.toggle('active',item.dataset.tab===tab);});
+  location.hash=tab;
+ });
+});
+</script>
 <script src="./app.js?v=2" type="module"></script>
 </body></html>
