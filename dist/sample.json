@@ -1,0 +1,22 @@
+[
+  {
+    "id": "demo1",
+    "name": "示例：大学英语",
+    "weekday": 1,
+    "startPeriod": 1,
+    "endPeriod": 2,
+    "weeks": "1-16",
+    "room": "教学楼 A101",
+    "teacher": ""
+  },
+  {
+    "id": "demo2",
+    "name": "示例：高等数学",
+    "weekday": 3,
+    "startPeriod": 3,
+    "endPeriod": 4,
+    "weeks": "1-16",
+    "room": "教学楼 B202",
+    "teacher": ""
+  }
+]

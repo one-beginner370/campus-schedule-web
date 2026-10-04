@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#123c35"><meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="校园课表">
+  <meta name="description" content="无广告的个人课程表。周课表、今日课程、文件识别导入和本地保存。">
+  <title>校园课表</title><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="#week"><span class="brand-icon" aria-hidden="true">课</span><span>校园课表<small>2026—2027 · 第一学期</small></span></a>
+    <nav class="navigation" aria-label="主导航">
+      <button data-tab="week" class="nav-button active"><span data-icon="calendar"></span><span>我的课表</span></button>
+      <button data-tab="today" class="nav-button"><span data-icon="sun"></span><span>今日课程</span></button>
+      <button data-tab="import" class="nav-button"><span data-icon="upload"></span><span>导入课表</span></button>
+      <button data-tab="settings" class="nav-button"><span data-icon="settings"></span><span>课表设置</span></button>
+    </nav>
+    <div class="sidebar-footer"><span data-icon="shield"></span><span>无广告 · 本地保存</span></div>
+  </aside>
+  <main>
+    <header class="topbar"><span class="mobile-brand"><span class="brand-icon">课</span>校园课表</span><span class="desktop-label">我的学习日程</span><button id="install-help" class="text-button"><span data-icon="phone"></span>添加到主屏幕</button></header>
+    <section id="week-view" class="view">
+      <div class="page-heading"><div><span class="eyebrow">2026—2027 / 第一学期</span><h1>我的课表</h1></div><button id="add-course" class="primary-button"><span data-icon="plus"></span>添加课程</button></div>
+      <div class="week-toolbar"><div class="week-switcher"><button id="previous-week" class="icon-button" aria-label="上一周"><span data-icon="left"></span></button><div><strong id="week-label">第 2 周</strong><span id="week-dates">按教学周查看课程</span></div><button id="next-week" class="icon-button" aria-label="下一周"><span data-icon="right"></span></button></div><div class="toolbar-actions"><button id="go-current" class="secondary-button">回到本周</button><label class="switch-label"><input id="weekends" type="checkbox" checked>显示周末</label></div></div>
+      <div id="semester-notice" class="notice"><span data-icon="info"></span><span>第一周起始日期还未设置，暂时按周次查看。</span><button data-open-settings>设置日期</button></div>
+      <div class="schedule-card"><div id="schedule-scroll" class="schedule-scroll"><div id="schedule-grid"></div></div><div class="schedule-footer"><span id="week-summary"></span><span class="scroll-hint">左右滑动查看其余日期</span></div></div>
+      <div class="legend"><span><i style="background:#5479c7"></i>专业课程</span><span><i style="background:#398571"></i>公共课程</span><span>点击课程查看或修改安排</span></div>
+    </section>
+    <section id="today-view" class="view" hidden><div class="page-heading"><div><span class="eyebrow" id="today-date"></span><h1>今日课程</h1></div></div><div id="today-content"></div></section>
+    <section id="import-view" class="view" hidden><div class="page-heading"><div><span class="eyebrow">文件导入</span><h1>把课表带进来</h1></div></div>
+      <div class="import-grid"><div class="panel upload-panel"><span class="upload-symbol" data-icon="upload"></span><h2>选择你的课表文件</h2><p>PDF、图片、Excel、CSV、ICS 或 JSON</p><label class="primary-button file-button" for="file-input">选择文件<input id="file-input" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.xlsx,.xls,.csv,.ics,.json,image/*"></label><span class="small-note">在本设备处理，不上传课表文件 · 最大 20 MB</span></div><div class="panel import-notes"><h2>导入前，先校对</h2><p>PDF 和图片按常见七列课表的布局解析。其他学校的表格位置不同，可能需要手动修正。</p><p>同一门课换教室、教师或周次，会保留为不同的安排。</p><button id="load-sample" class="secondary-button">加载示例课表</button><button id="download-template" class="text-button">下载 Excel / CSV 模板</button></div></div>
+      <div id="import-progress" class="notice" hidden role="status"></div><div id="import-error" class="error-message" hidden role="alert"></div><div id="import-preview"></div>
+    </section>
+    <section id="settings-view" class="view" hidden><div class="page-heading"><div><span class="eyebrow">个人设置</span><h1>让课表合你的节奏</h1></div></div>
+      <form id="settings-form" class="panel settings-panel"><h2>学期与作息</h2><label>第一周起始日期（周一）<input id="semester-start" type="date"></label><p class="small-note">请填写学校第一周的周一，PDF 打印日期不能当作开学日期。</p><div id="period-settings" class="period-settings"></div><button class="primary-button" type="submit">保存设置</button></form>
+      <div class="panel backup-panel"><h2>备份你的课表</h2><p>课表保存在当前浏览器。更换手机、清理网站数据或卸载主屏幕网页前，请先导出备份。主屏幕版和浏览器版可能使用不同的本地存储。</p><div class="button-row"><button id="export-json" class="secondary-button">导出 JSON 备份</button><button id="export-ics" class="secondary-button">导出到苹果日历</button></div><p class="small-note">网页关闭时无法可靠提醒上课；可将课程导入苹果日历，并在日历中设置提醒。</p></div>
+    </section>
+  </main>
+</div>
+<dialog id="course-dialog"><form id="course-form"><div class="dialog-heading"><h2 id="course-dialog-title">课程安排</h2><button type="button" class="icon-button" data-close-dialog aria-label="关闭"><span data-icon="close"></span></button></div><label>课程名称<input name="name" required maxlength="100"></label><div class="form-row"><label>星期<select name="weekday"><option value="1">星期一</option><option value="2">星期二</option><option value="3">星期三</option><option value="4">星期四</option><option value="5">星期五</option><option value="6">星期六</option><option value="7">星期日</option></select></label><label>教师<input name="teacher" maxlength="100"></label></div><div class="form-row"><label>开始节次<input name="startPeriod" type="number" min="1" max="12" required></label><label>结束节次<input name="endPeriod" type="number" min="1" max="12" required></label></div><label>上课周次<input name="weeks" placeholder="例如 2-5,7-9 或 15-17(单)" required></label><label>上课地点<input name="room" maxlength="200"></label><p id="course-error" class="error-message" hidden></p><div class="dialog-actions"><button id="delete-course" class="danger-button" type="button">删除安排</button><button class="primary-button" type="submit">保存安排</button></div></form></dialog>
+<dialog id="help-dialog"><div class="dialog-heading"><h2>添加到 iPhone 主屏幕</h2><button class="icon-button" data-close-dialog aria-label="关闭"><span data-icon="close"></span></button></div><ol class="install-steps"><li>在 iPhone 的 Safari 中打开本页。</li><li>点击“分享”，选择“添加到主屏幕”。</li><li>名称保留“校园课表”，点击“添加”。</li></ol><p>如果 Safari 显示“作为网页 App 打开”，保持开启。添加后从主屏幕打开，核对课表数据；必要时导入 JSON 备份。</p><button class="primary-button" data-close-dialog>知道了</button></dialog>
+<dialog id="confirm-dialog"><h2>删除这条安排？</h2><p>删除后可以通过备份恢复。</p><div class="dialog-actions"><button id="cancel-delete" class="secondary-button">取消</button><button id="confirm-delete" class="danger-button">删除</button></div></dialog>
+<div id="toast" role="status" hidden></div>
+<script src="./app.js" type="module"></script>
+</body></html>

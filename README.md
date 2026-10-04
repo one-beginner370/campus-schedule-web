@@ -1,1 +1,0 @@
-Ad-free timetable
