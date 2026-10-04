@@ -6,7 +6,7 @@ const storageKey='campus-schedule-web-v1';let state,week=2,tab='week',preview=nu
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,4500);}
 function save(next){try{localStorage.setItem(storageKey,JSON.stringify(next));state=next;render();return true;}catch{toast('保存失败，可能存储空间不足。当前修改尚未保存，请先导出备份。');return false;}}
 try{const saved=localStorage.getItem(storageKey);if(saved){const data=JSON.parse(saved);if(!Array.isArray(data.courses)||data.courses.some(c=>validate(c))||!Array.isArray(data.periods)||data.periods.length!==12)throw Error();state=data;}else state={courses:[],semesterStart:'',periods,weekends:true};}catch{state={courses:[],semesterStart:'',periods,weekends:true};toast('原有课表读取失败，未覆盖原数据。可在导入页恢复 JSON 备份。');}
-if(!localStorage.getItem(storageKey)){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch{toast('浏览器无法保存数据，请导出备份。');}}
+try{if(!localStorage.getItem(storageKey))localStorage.setItem(storageKey,JSON.stringify(state));}catch{toast('浏览器无法保存数据，请导出备份。');}
 week=Math.min(30,Math.max(1,currentWeek(state.semesterStart)||2));
 const colors=[['#eef2fb','#45649c','#dbe4f5'],['#e8f4f0','#35725f','#d8ebe3'],['#fff3e6','#9e6d31','#f3e5d3'],['#f1edfa','#78649e','#e4ddf2']];
 function palette(c){if(['中国近现代史纲要','形势与政策','职业生涯发展和就业指导','创新创业基础'].includes(c.name))return colors[1];return colors[[...c.name].reduce((n,ch)=>n+ch.charCodeAt(0),0)%colors.length];}
