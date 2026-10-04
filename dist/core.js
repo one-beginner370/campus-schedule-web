@@ -41,3 +41,13 @@ export function parseICS(text,state){
  }
  return {courses:results,warnings:[`日历课程时间需与作息表匹配；未匹配节次的条目请编辑。${skipped?'有 '+skipped+' 个事件的日期或重复规则无法映射，未导入。':''}`]};
 }
+
+export function courseColorIndices(courses){
+ const list=[...courses].sort((a,b)=>a.weekday-b.weekday||a.startPeriod-b.startPeriod||a.endPeriod-b.endPeriod||String(a.id).localeCompare(String(b.id)));
+ const edges=list.map(()=>new Set());const connect=(a,b)=>{edges[a].add(b);edges[b].add(a);};
+ for(let i=0;i<list.length;i++)for(let j=i+1;j<list.length;j++){const a=list[i],b=list[j];if(Math.abs(a.weekday-b.weekday)<=1&&a.startPeriod<=b.endPeriod&&b.startPeriod<=a.endPeriod)connect(i,j);}
+ for(let day=1;day<=7;day++){const indices=list.map((c,i)=>c.weekday===day?i:-1).filter(i=>i>=0);for(let i=1;i<indices.length;i++)connect(indices[i-1],indices[i]);}
+ const assigned=new Map();while(assigned.size<list.length){let pick=-1,saturation=-1,degree=-1;for(let i=0;i<list.length;i++){if(assigned.has(i))continue;const used=new Set([...edges[i]].filter(j=>assigned.has(j)).map(j=>assigned.get(j)));if(used.size>saturation||used.size===saturation&&edges[i].size>degree){pick=i;saturation=used.size;degree=edges[i].size;}}
+ const used=new Set([...edges[pick]].map(j=>assigned.get(j)));let color=0;while(used.has(color))color++;assigned.set(pick,color);}
+ return new Map(list.map((c,i)=>[c.id,assigned.get(i)]));
+}
