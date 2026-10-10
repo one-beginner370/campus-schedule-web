@@ -12,3 +12,5 @@
 
 /* Visible native pickers work without synthetic clicks on mobile browsers. */
 .file-pickers{display:grid;gap:14px;width:100%;max-width:420px}.file-button{display:block;text-align:left;color:var(--ink);font-size:14px;line-height:1.6;max-width:100%}.file-button input[type=file]{position:static;display:block;width:100%;max-width:100%;min-height:48px;opacity:1;margin:8px 0 0;cursor:pointer;font-size:16px;border:1px solid var(--border);border-radius:9px;background:var(--page);padding:6px}.file-button input[type=file]::file-selector-button{min-height:36px;border:0;border-radius:6px;background:var(--green);color:#fff;padding:8px 12px;margin-right:10px;font:inherit}.file-button input[type=file]:disabled{opacity:.5;cursor:wait}.source-file-button{margin-top:14px}
+
+.reminder-panel{max-width:740px;margin-top:22px}.reminder-panel>p{font-size:14px}.reminder-panel #reminder-status{padding:12px;background:#eef2ed;border-radius:9px;color:var(--green);line-height:1.7}.reminder-panel #reminder-status.error-message{background:#fff0ee;color:#a64235}.reminder-panel .button-row{margin-top:16px;gap:10px}.reminder-panel .button-row button{white-space:normal}

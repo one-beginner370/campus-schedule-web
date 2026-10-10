@@ -1,1 +1,7 @@
+node_modules/
 .openai/
+.env
+.env.*
+!.env.example
+*.log
+*-mobile.png
