@@ -5,3 +5,6 @@ node_modules/
 !.env.example
 *.log
 *-mobile.png
+
+# Private import regression fixtures and screenshots
+tmp/
