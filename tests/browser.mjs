@@ -10,7 +10,7 @@ const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.mjs':'t
 const server=createServer(async(req,res)=>{try{const file=resolve(root,'.'+decodeURIComponent(new URL(req.url,origin).pathname));assert(file.startsWith(root));const path=(await stat(file)).isDirectory()?resolve(file,'index.html'):file;res.setHeader('Content-Type',mime[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.statusCode=404;res.end('Not found');}});
 await new Promise(r=>server.listen(8767,'127.0.0.1',r));
 const browser=await chromium.launch({channel:'msedge',headless:true});
-const fixture={semesterStart:'2026-09-07',courses:[{id:'fixture',name:'明日测试课',room:'E-213',teacher:'',weekday:1,startPeriod:1,endPeriod:2,weeks:'1-16'}],periods:Array.from({length:12},(_,i)=>[`${String(i+8).padStart(2,'0')}:00`,`${String(i+8).padStart(2,'0')}:45`]),weekends:true,updatedAt:1};
+const fixture={semesterStart:'2026-09-07',courses:[{id:'fixture',name:'明日测试课',room:'E-213',teacher:'',weekday:1,startPeriod:1,endPeriod:2,weeks:'6'}],periods:Array.from({length:12},(_,i)=>[`${String(i+8).padStart(2,'0')}:00`,`${String(i+8).padStart(2,'0')}:45`]),weekends:true,updatedAt:1};
 try{
  // Disconnected production state must not request permission or claim success.
  const context=await browser.newContext({viewport:{width:393,height:851},isMobile:true,hasTouch:true});const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
