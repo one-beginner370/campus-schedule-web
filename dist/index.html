@@ -47,7 +47,7 @@
     <section id="settings-view" class="view" hidden><div class="page-heading"><div><span class="eyebrow">个人设置</span><h1>让课表合你的节奏</h1></div></div>
       <form id="settings-form" class="panel settings-panel"><h2>学期与作息</h2><label>第一周起始日期（周一）<input id="semester-start" type="date"></label><p class="small-note">请填写学校第一周的周一，PDF 打印日期不能当作开学日期。</p><div id="period-settings" class="period-settings"></div><button class="primary-button" type="submit">保存设置</button></form>
       <div class="panel reminder-panel" aria-labelledby="reminder-heading"><h2 id="reminder-heading">明日课程提醒</h2><p>每天北京时间 <strong>19:30</strong> 发送系统通知，包含明天的课程、时间和教室。明天没课不提醒，启用后关闭网站也可接收。</p><p id="reminder-status" role="status" aria-live="polite">正在检查提醒服务…</p><div class="button-row"><button id="enable-reminders" class="primary-button" type="button" disabled>启用系统提醒</button><button id="test-reminder" class="secondary-button" type="button" hidden>发送测试通知</button><button id="sync-reminders" class="secondary-button" type="button" hidden>重新同步课表</button><button id="disable-reminders" class="danger-button" type="button" hidden>关闭提醒</button></div><p id="reminder-sync-time" class="small-note"></p><p class="small-note">启用时会将提醒所需的课程、作息、教室和推送订阅保存到提醒服务，PDF 和截图不上传。课表修改后自动同步；离线修改需联网后打开本页。关闭提醒会取消此设备订阅并删除云端副本。</p><p class="small-note">iPhone：需 iOS 16.4 或更新版本，先添加到主屏幕，再从主屏幕打开并允许通知。安卓：需要支持网页推送的浏览器和系统通知权限。</p></div>
-      <div class="panel backup-panel"><h2>备份你的课表</h2><p>课表保存在当前浏览器。更换手机、清理网站数据或卸载主屏幕网页前，请先导出备份。主屏幕版和浏览器版可能使用不同的本地存储。</p><div class="button-row"><button id="export-json" class="secondary-button">导出 JSON 备份</button><button id="export-ics" class="secondary-button">导出到手机日历</button></div><p class="small-note">网页关闭时无法可靠提醒上课；可将课程导入支持 ICS 文件的手机日历，并在日历中设置提醒。</p></div>
+      <div class="panel backup-panel"><h2>备份你的课表</h2><p>课表保存在当前浏览器。更换手机、清理网站数据或卸载主屏幕网页前，请先导出备份。主屏幕版和浏览器版可能使用不同的本地存储。</p><div class="button-row"><button id="export-json" class="secondary-button">导出 JSON 备份</button><button id="export-ics" class="secondary-button">导出到手机日历</button></div><p class="small-note">如需上课前的日历闹钟，可将课程导入支持 ICS 文件的手机日历，并在日历中设置提醒。每日 19:30 的明日课程通知在上方单独启用。</p></div>
     </section>
   </main>
 </div>
@@ -139,7 +139,7 @@ function save(next){next={...next,updatedAt:Date.now()};let localOK=false;try{lo
 let candidates=[];try{const saved=localStorage.getItem(storageKey);if(saved)candidates.push(JSON.parse(saved));}catch{}try{const saved=await dbAction('readonly');if(saved)candidates.push(saved);}catch{}
 const valid=candidates.filter(data=>Array.isArray(data.courses)&&!data.courses.some(c=>validate(c))&&Array.isArray(data.periods)&&data.periods.length===12).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
 state=valid[0]||{courses:[],semesterStart:'',periods,weekends:true};
-storageStatus(valid.length?'已恢复本设备的课表 · 不会同步给其他人':'课表仅保存在当前设备和浏览器，不会同步给其他人。导入后请点击“确认保存到我的课表”。');
+storageStatus(valid.length?'已恢复本设备的课表 · 不会同步给其他人':'课表默认保存在当前设备和浏览器。启用提醒后会另存提醒所需的云端副本。导入后请点击“确认保存到我的课表”。');
 if(candidates.length&&!valid.length){toast('原数据格式异常，未覆盖。请从 JSON 备份恢复。');}
 if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});
 week=Math.min(30,Math.max(1,currentWeek(state.semesterStart)||2));
