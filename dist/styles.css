@@ -9,3 +9,6 @@
 #schedule-grid .grid-header:first-child{left:0;z-index:6;border-right:1px solid var(--border);box-shadow:3px 0 5px #123c3508}
 
 .course-block.inactive-course{background:#eeeeee;color:#707070;border-color:#d0d0d0;border-style:dashed}.course-block.inactive-course strong{color:#606060}.course-block.inactive-course span{color:#707070}
+
+/* Visible native pickers work without synthetic clicks on mobile browsers. */
+.file-pickers{display:grid;gap:14px;width:100%;max-width:420px}.file-button{display:block;text-align:left;color:var(--ink);font-size:14px;line-height:1.6;max-width:100%}.file-button input[type=file]{position:static;display:block;width:100%;max-width:100%;min-height:48px;opacity:1;margin:8px 0 0;cursor:pointer;font-size:16px;border:1px solid var(--border);border-radius:9px;background:var(--page);padding:6px}.file-button input[type=file]::file-selector-button{min-height:36px;border:0;border-radius:6px;background:var(--green);color:#fff;padding:8px 12px;margin-right:10px;font:inherit}.file-button input[type=file]:disabled{opacity:.5;cursor:wait}.source-file-button{margin-top:14px}
