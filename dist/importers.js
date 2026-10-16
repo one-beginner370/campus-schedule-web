@@ -1,5 +1,5 @@
 import {parseCSV,fromRows,parseICS,normalize,parseLocalDate} from './core.js?v=11';
-import {inferColumns,pageColumns,parseScheduleColumns,documentColumns} from './recognition.js?v=1';
+import {inferColumns,pageColumns,parseScheduleColumns,documentColumns} from './recognition.js?v=2';
 let pdfLib;
 function loadScript(src,globalName){if(window[globalName])return Promise.resolve(window[globalName]);return new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=src;el.onload=()=>resolve(window[globalName]);el.onerror=()=>reject(Error('识别组件加载失败，请联网后重试'));document.head.append(el);});}
 async function pdf(){if(!Promise.withResolvers)Promise.withResolvers=function(){let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return {promise,resolve,reject};};pdfLib??=await import('./vendor/pdf/pdf.mjs');pdfLib.GlobalWorkerOptions.workerSrc=new URL('./vendor/pdf/pdf.worker.mjs',import.meta.url).href;return pdfLib;}

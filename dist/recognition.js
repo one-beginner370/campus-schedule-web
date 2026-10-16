@@ -36,7 +36,7 @@ export function pageColumns(items,width,layout){
 }
 export function canonicalWeeks(raw){
  const text=cleanText(raw).replace(/\s|周次?[:：]?|第/g,'').replace(/\(([单双])周?\)/g,'($1)').replace(/,$/,'');
- if(weekSet(text))return text;
+ if(!text.includes(',')&&weekSet(text))return text;
  // A different parity on each range cannot be represented by one suffix.
  const weeks=new Set();for(const part of text.split(',')){
   const match=part.match(/^(\d{1,2})(?:-(\d{1,2}))?(?:\(([单双])\))?$/);if(!match)return '';
@@ -59,7 +59,7 @@ export function parseScheduleColumn(raw,weekday){
  // Some schools print the period once, then list more week/room variants.
  for(let i=0;i<periods.length;i++){
   const p=periods[i],start=p.index+p[0].length,block=text.slice(start,periods[i+1]?.index??text.length);
-  for(const match of block.matchAll(/(?:\n|\/)\s*(?:周次\s*[:：]\s*)?(\d{1,2}(?:\s*-\s*\d{1,2})?\s*周(?:\([单双]周?\))?(?:\s*,\s*\d{1,2}(?:\s*-\s*\d{1,2})?\s*周?)*)\s*(?=\/?\s*(?:场地|教室|地点|上课地点|教师)[:：])/g)){
+  for(const match of block.matchAll(/(?:\n|\/)\s*(?:周次\s*[:：]\s*)?(\d{1,2}(?:\s*-\s*\d{1,2})?\s*周(?:\(\s*[单双]\s*周?\s*\))?(?:\s*,\s*\d{1,2}(?:\s*-\s*\d{1,2})?\s*周?)*)\s*(?=\/?\s*(?:场地|教室|地点|上课地点|教师)[:：])/g)){
    if(!/[:：]/.test(block.slice(0,match.index)))continue;
    const index=start+match.index+match[0].indexOf(match[1]);anchors.push(Object.assign(['',p[1],p[2]],{index}));
   }
@@ -69,7 +69,7 @@ export function parseScheduleColumn(raw,weekday){
   const m=anchors[i],previous=anchors[i-1],base=previous?previous.index+previous[0].length:0,title=titleBefore(text.slice(base,m.index),base);
   if(!title.name&&records.length)title.name=records[records.length-1].name;
   const following=text.slice(m.index+m[0].length,anchors[i+1]?.index??text.length);
-  const weekMatch=following.match(/^\s*(?:周次\s*[:：]?\s*)?((?:第?\s*\d{1,2}\s*(?:-\s*\d{1,2})?\s*周?\s*(?:\([单双]周?\))?\s*,?\s*)+)/);
+  const weekMatch=following.match(/^\s*(?:周次\s*[:：]?\s*)?((?:第?\s*\d{1,2}\s*(?:-\s*\d{1,2})?\s*周?\s*(?:\(\s*[单双]\s*周?\s*\))?\s*,?\s*)+)/);
   records.push({anchor:m,titleStart:title.start,name:title.name,weeks:weekMatch?canonicalWeeks(weekMatch[1]):'',weekEnd:m.index+m[0].length+(weekMatch?.[0].length||0)});
  }
  const courses=[],issues=[];
