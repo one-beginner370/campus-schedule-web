@@ -1,0 +1,46 @@
+name: Build iOS unsigned package
+on:
+  push:
+    branches: ['codex/ios-build']
+    paths: ['mobile/**', '.github/workflows/ios-native.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ios:
+    runs-on: macos-15
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - name: Select installed Xcode 26 or newer
+        shell: bash
+        run: |
+          XCODE_PATH=$(python3 - <<'PY'
+          import glob, re
+          found=[]
+          for path in glob.glob('/Applications/Xcode*.app'):
+              match=re.search(r'Xcode_(\d+)(?:\.(\d+))?',path)
+              if match and int(match[1])>=26:
+                  found.append(((int(match[1]),int(match[2] or 0)),path))
+          if not found:
+              raise SystemExit('Runner has no Xcode 26+ installed')
+          print(sorted(found)[-1][1])
+          PY
+          )
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+      - name: Build unsigned device archive
+        run: bash scripts/build-ios.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CampusSchedule-iOS-unsigned
+          path: mobile/build/CampusSchedule-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 7

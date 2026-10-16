@@ -1,0 +1,1 @@
+{"appId":"io.github.onebeginner370.campusschedule","appName":"校园课表","webDir":"www","android":{"allowMixedContent":false},"ios":{"contentInset":"automatic"},"plugins":{"LocalNotifications":{"smallIcon":"ic_stat_schedule","iconColor":"#466B55"}}}
