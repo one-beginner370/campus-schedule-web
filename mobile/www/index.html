@@ -7,7 +7,7 @@
   <meta name="description" content="无广告的个人课程表。周课表、今日课程、文件识别导入和本地保存。">
   <title>校园课表</title><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icon-192.png">
   <link rel="stylesheet" href="./styles.css?v=14">
-  <link rel="stylesheet" href="./minimal.css?v=14">
+  <link rel="stylesheet" href="./minimal.css?v=16">
 <style>body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)} .bottom-nav{padding-bottom:env(safe-area-inset-bottom)}</style></head>
 <body>
 <div class="app-shell">
@@ -27,7 +27,7 @@
       <div class="page-heading"><div><span class="eyebrow">2026—2027 / 第一学期</span><h1>我的课表</h1></div><button id="add-course" class="primary-button"><span data-icon="plus"></span>添加课程</button></div>
       <div class="week-toolbar"><div class="week-switcher"><button id="previous-week" class="icon-button" aria-label="上一周"><span data-icon="left"></span></button><div><strong id="week-label">第 2 周</strong><span id="week-dates">按教学周查看课程</span></div><button id="next-week" class="icon-button" aria-label="下一周"><span data-icon="right"></span></button></div><div class="toolbar-actions"><button id="go-current" class="secondary-button">回到本周</button><label class="switch-label"><input id="weekends" type="checkbox" checked>显示周末</label></div></div>
       <div id="semester-notice" class="notice"><span data-icon="info"></span><span>第一周起始日期还未设置，暂时按周次查看。</span><button data-open-settings>设置日期</button></div>
-      <div class="display-toolbar"><div class="display-modes" role="group" aria-label="课程显示模式"><button type="button" data-display-mode="all" aria-pressed="true">全部课程</button><button type="button" data-display-mode="week" aria-pressed="false">本周课程</button></div><span id="display-hint">包含非本周安排</span></div>
+      <div class="display-toolbar"><div class="display-modes" role="group" aria-label="课程显示模式"><button type="button" data-display-mode="all" aria-pressed="true">全部课程</button><button type="button" data-display-mode="week" aria-pressed="false">本周课程</button></div><div class="schedule-actions"><span id="display-hint">包含非本周安排</span><button id="clear-schedule" type="button" class="danger-button">清空课表</button></div></div>
       <div class="schedule-card"><div id="schedule-scroll" class="schedule-scroll"><div id="schedule-grid"></div></div><div class="schedule-footer"><span id="week-summary"></span><span class="scroll-hint">点击课程查看详情</span></div></div>
       <div class="legend"><span><i style="background:#d8d8dc"></i>灰色 · 非本周</span><span><i style="background:#c7b7ef"></i>淡色 · 本周上课</span><span>角标表示该时段的安排数量</span></div>
     </section>
@@ -56,6 +56,7 @@
 <dialog id="course-dialog"><form id="course-form"><div class="dialog-heading"><h2 id="course-dialog-title">课程安排</h2><button type="button" class="icon-button" data-close-dialog aria-label="关闭"><span data-icon="close"></span></button></div><label>课程名称<input name="name" required maxlength="100"></label><div class="form-row"><label>星期<select name="weekday"><option value="1">星期一</option><option value="2">星期二</option><option value="3">星期三</option><option value="4">星期四</option><option value="5">星期五</option><option value="6">星期六</option><option value="7">星期日</option></select></label><label>教师<input name="teacher" maxlength="100"></label></div><div class="form-row"><label>开始节次<input name="startPeriod" type="number" min="1" max="12" required></label><label>结束节次<input name="endPeriod" type="number" min="1" max="12" required></label></div><label>上课周次<input name="weeks" placeholder="例如 2-5,7-9 或 15-17(单)" required></label><label>上课地点<input name="room" maxlength="200"></label><p id="course-error" class="error-message" hidden></p><div class="dialog-actions"><button id="delete-course" class="danger-button" type="button">删除安排</button><button class="primary-button" type="submit">保存安排</button></div></form></dialog>
 <dialog id="arrangements-dialog" aria-labelledby="arrangements-title"><div class="dialog-heading"><h2 id="arrangements-title">课程安排</h2><button class="icon-button" data-close-dialog aria-label="关闭"><span data-icon="close"></span></button></div><p id="arrangements-summary"></p><div id="arrangements-list"></div></dialog>
 <dialog id="help-dialog"><div class="dialog-heading"><h2>添加到手机主屏幕</h2><button class="icon-button" data-close-dialog aria-label="关闭"><span data-icon="close"></span></button></div><p>安卓 / 小米：用系统浏览器、Chrome 或 Edge 打开本页，在浏览器菜单中选择“添加到主屏幕”“安装应用”或“添加快捷方式”。具体名称随浏览器版本不同。</p><h3>iPhone</h3><ol class="install-steps"><li>在 iPhone 的 Safari 中打开本页。</li><li>点击“分享”，选择“添加到主屏幕”。</li><li>名称保留“校园课表”，点击“添加”。</li></ol><p>如果 Safari 显示“作为网页 App 打开”，保持开启。添加后从主屏幕打开，核对课表数据；必要时导入 JSON 备份。</p><button class="primary-button" data-close-dialog>知道了</button></dialog>
+<dialog id="clear-schedule-dialog" aria-labelledby="clear-schedule-title"><h2 id="clear-schedule-title">清空全部课表？</h2><p id="clear-schedule-description"></p><p>清空后如需恢复，请重新导入课表或备份。</p><div class="dialog-actions"><button id="cancel-clear-schedule" type="button" class="secondary-button" autofocus>取消</button><button id="confirm-clear-schedule" type="button" class="danger-button">确认清空</button></div></dialog>
 <dialog id="confirm-dialog"><h2>删除这条安排？</h2><p>删除后可以通过备份恢复。</p><div class="dialog-actions"><button id="cancel-delete" class="secondary-button">取消</button><button id="confirm-delete" class="danger-button">删除</button></div></dialog>
 <div id="toast" role="status" hidden></div>
 <script>
@@ -150,7 +151,7 @@ const colors=[['#edf3ff','#527cc0','#cfddf7'],['#eaf8f5','#348979','#c8eae3'],['
 function palette(c,index=0){if(index<colors.length)return colors[index];const hue=(index*137.508)%360;return [`hsl(${hue} 55% 93%)`,`hsl(${hue} 38% 32%)`,`hsl(${hue} 40% 85%)`];}
 function setTab(name){tab=['week','today','import','settings'].includes(name)?name:'week';document.querySelectorAll('.view').forEach(el=>el.hidden=el.id!==tab+'-view');document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('active',el.dataset.tab===tab));try{history.replaceState(null,'','#'+tab);}catch{}render();}
 document.querySelectorAll('[data-tab]').forEach(el=>el.onclick=()=>setTab(el.dataset.tab));document.querySelectorAll('[data-open-settings]').forEach(el=>el.onclick=()=>setTab('settings'));
-function render(){renderWeek();renderToday();if(tab==='settings')renderSettings();}
+function render(){$('#clear-schedule').disabled=state.courses.length===0;renderWeek();renderToday();if(tab==='settings')renderSettings();}
 let displayMode='all',courseGroups=[];
 try{displayMode=localStorage.getItem('campus-schedule-display-mode')==='week'?'week':'all';}catch{}
 function groupArrangements(courses){
@@ -217,6 +218,9 @@ $('#delete-course').onclick=()=>$('#confirm-dialog').showModal();$('#cancel-dele
 $('#show-today').onclick=()=>{const url=new URL(location.href);url.searchParams.delete('reminderDate');history.replaceState(null,'',url);renderToday();};
 $('#install-help').onclick=()=>$('#help-dialog').showModal();
 function download(name,text,type='application/json'){if(window.campusNativeExport)return window.campusNativeExport(name,text);if(window.Capacitor?.isNativePlatform?.()){toast('导出组件尚未就绪，请稍后重试');return;}const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+$('#clear-schedule').onclick=()=>{if(!state.courses.length)return;$('#clear-schedule-description').textContent=`将删除当前设备上的全部 ${state.courses.length} 条课程安排，保留开学日期和作息设置。`;$('#clear-schedule-dialog').showModal();};
+$('#cancel-clear-schedule').onclick=()=>$('#clear-schedule-dialog').close();
+$('#confirm-clear-schedule').onclick=()=>{if(save({...state,courses:[]})){$('#clear-schedule-dialog').close();toast('已清空全部课程，可以重新导入课表');}};
 $('#export-json').onclick=()=>download('校园课表备份.json',JSON.stringify(state,null,2));$('#export-ics').onclick=()=>{try{download('校园课表.ics',exportICS(state),'text/calendar;charset=utf-8');}catch(e){toast(e.message);}};
 $('#download-template').onclick=()=>download('课表导入模板.csv','\uFEFF课程,星期,开始节,结束节,周次,教室,教师\r\n工程力学,3,1,2,"2-3,6-12",敦文园E-213,梁小光\r\n','text/csv;charset=utf-8');
 $('#load-sample').onclick=async()=>{try{preview={courses:(await(await fetch('./sample.json')).json()).map(normalize),warnings:['这是虚构示例课程。请导入你自己的课表。'],rawText:'示例含 2 门课程。'};renderPreview();}catch{toast('无法加载样本，请联网后重试。');}};
