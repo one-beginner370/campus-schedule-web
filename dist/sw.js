@@ -1,5 +1,5 @@
 importScripts('./push-worker.js?v=12');
-const CACHE='campus-schedule-shell-v16';
+const CACHE='campus-schedule-shell-v17';
 const SHELL=['./push-worker.js?v=12','./reminders.js?v=12','./','./index.html','./styles.css?v=14','./minimal.css?v=16','./app.js?v=2','./core.js?v=11','./importers.js?v=6','./recognition.js?v=2','./sample.json','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(async cache=>{for(const path of SHELL){const response=await fetch(path);if(response.ok&&!response.redirected)await cache.put(path,response);}}).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('campus-schedule-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
