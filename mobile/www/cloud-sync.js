@@ -4,7 +4,7 @@ const KEY='sb_publishable_Ha0EYpk74ci685NJ_6iT_w_vyqLuAxo';
 const SESSION='campus-cloud-session-v1';
 let session=null,revision=null,busy=false,pending=null;
 try{session=JSON.parse(sessionStorage.getItem(SESSION)||'null')}catch{}
-function persist(){if(session)sessionStorage.setItem(SESSION,JSON.stringify(session));else sessionStorage.removeItem(SESSION)}
+function persist(){try{if(session)sessionStorage.setItem(SESSION,JSON.stringify(session));else sessionStorage.removeItem(SESSION)}catch{}}
 async function request(path,{method='GET',body,auth=true}={}){
  if(auth&&!session)throw Error('请先登录');
  if(auth&&session.expires_at*1000<Date.now()+60000){
@@ -18,11 +18,12 @@ async function request(path,{method='GET',body,auth=true}={}){
  return v;
 }
 function start(){
- const panel=document.createElement('section');panel.className='panel';panel.style.marginTop='20px';
- panel.innerHTML='<h2>账号与云端课表</h2><p>登录后可手动上传或下载自己的课表。离线时仍可使用本机课表；关闭 App 后可能需要重新登录。</p><p id="cloud-state" role="status"></p><form id="cloud-login"><label>邮箱<input name="email" type="email" autocomplete="email" required></label><label>密码<input name="password" type="password" autocomplete="current-password" minlength="8" required></label><div class="button-row"><button class="primary-button" type="submit">登录</button><button type="button" data-cloud="signup" class="secondary-button">注册账号</button></div></form><div class="button-row"><button data-cloud="upload" class="primary-button">上传本机课表</button><button data-cloud="download" class="secondary-button">下载云端课表</button><button data-cloud="notices" class="secondary-button">刷新公告</button><button data-cloud="logout" class="secondary-button">退出账号</button><button data-cloud="delete" class="danger-button">注销云端账号</button></div><p id="cloud-message" role="status" aria-live="polite"></p><div id="cloud-notices"></div>';
- document.querySelector('#settings-view').append(panel);
+ const panel=document.createElement('section');panel.className='panel';panel.id='cloud-account';panel.tabIndex=-1;panel.style.marginTop='20px';
+ panel.innerHTML='<h2>账号与云端课表</h2><p>登录后可手动上传或下载自己的课表。离线时仍可使用本机课表；关闭当前窗口后可能需要重新登录。</p><p id="cloud-state" role="status"></p><form id="cloud-login"><label>邮箱<input name="email" type="email" autocomplete="email" required></label><label>密码<input name="password" type="password" autocomplete="current-password" minlength="8" required></label><div class="button-row"><button class="primary-button" type="submit">登录</button><button type="button" data-cloud="signup" class="secondary-button">注册账号</button></div></form><div class="button-row"><button data-cloud="upload" class="primary-button">上传本机课表</button><button data-cloud="download" class="secondary-button">下载云端课表</button><button data-cloud="notices" class="secondary-button">刷新公告</button><button data-cloud="logout" class="secondary-button">退出账号</button><button data-cloud="delete" class="danger-button">注销云端账号</button></div><p id="cloud-message" role="status" aria-live="polite"></p><div id="cloud-notices"></div>';
+ document.querySelector('#settings-view .page-heading').after(panel);
+ const entry=document.querySelector('#account-entry');entry.addEventListener('click',()=>{document.querySelector('[data-tab="settings"]').click();panel.scrollIntoView({block:'start',behavior:'smooth'});if(!session)panel.querySelector('input[name=email]').focus({preventScroll:true});else panel.focus({preventScroll:true});});
  const state=panel.querySelector('#cloud-state'),message=panel.querySelector('#cloud-message'),form=panel.querySelector('form');
- function render(){state.textContent=session?'已登录：'+(session.user?.email||'')+' · '+(revision===null?'尚未同步':'已知云端版本 v'+revision):'未登录 · 本机课表可正常使用';form.hidden=!!session;panel.querySelectorAll('[data-cloud]').forEach(b=>{b.disabled=busy||(!session&&!['signup'].includes(b.dataset.cloud))});form.querySelector('button[type=submit]').disabled=busy;}
+ function render(){entry.textContent=session?'我的账号':'登录 / 注册';entry.setAttribute('aria-label',session?'查看我的账号':'登录或注册账号');state.textContent=session?'已登录：'+(session.user?.email||'')+' · '+(revision===null?'尚未同步':'已知云端版本 v'+revision):'未登录 · 本机课表可正常使用';form.hidden=!!session;panel.querySelectorAll('[data-cloud]').forEach(b=>{b.disabled=busy||(!session&&!['signup'].includes(b.dataset.cloud))});form.querySelector('button[type=submit]').disabled=busy;}
  async function work(fn){if(busy)return;busy=true;message.textContent='处理中…';render();try{await fn()}catch(e){message.textContent=e.name==='TimeoutError'?'网络超时，请重试。上传重试会保留原请求标识。':e.message}finally{busy=false;render()}}
  async function login(signup){if(!form.reportValidity())return;const fd=new FormData(form);const email=String(fd.get('email')).trim(),password=String(fd.get('password'));const v=await request(signup?'/auth/v1/signup':'/auth/v1/token?grant_type=password',{method:'POST',auth:false,body:{email,password}});form.reset();if(v.access_token){session=v;revision=null;pending=null;persist();message.textContent='登录成功。请按需选择上传本机课表或下载云端课表。'}else message.textContent='注册请求已提交，请检查邮箱并完成确认后登录。'}
  form.addEventListener('submit',e=>{e.preventDefault();work(()=>login(false))});
