@@ -23,6 +23,8 @@ if(Capacitor.isNativePlatform()){
  }
  function enqueue(fn){queue=queue.catch(()=>{}).then(fn).catch(e=>status('提醒设置失败：'+e.message));return queue;}
  async function ready(){
+  $('install-help').hidden=true;
+  document.querySelectorAll('.reminder-panel .small-note').forEach(el=>el.hidden=true);
   $('reminder-heading').nextElementSibling.textContent='本机通知，不上传课表。每天北京时间19:30提醒明日课程，每次打开App续排未来30天，请至少每月打开一次。';
   if(Capacitor.getPlatform()==='android')await LocalNotifications.createChannel({id:'tomorrow-courses',name:'明日课程',importance:3});
   render();status(enabled?'正在更新提醒…':'尚未启用本机提醒。');

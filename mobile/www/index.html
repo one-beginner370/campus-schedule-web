@@ -51,6 +51,7 @@
       <form id="settings-form" class="panel settings-panel"><h2>学期与作息</h2><label>第一周起始日期（周一）<input id="semester-start" type="date"></label><p class="small-note">请填写学校第一周的周一，PDF 打印日期不能当作开学日期。</p><div id="period-settings" class="period-settings"></div><button class="primary-button" type="submit">保存设置</button></form>
       <div class="panel reminder-panel" aria-labelledby="reminder-heading"><h2 id="reminder-heading">明日课程提醒</h2><p>每天北京时间 <strong>19:30</strong> 发送系统通知，包含明天的课程、时间和教室。明天没课不提醒，启用后关闭网站也可接收。</p><p id="reminder-status" role="status" aria-live="polite">正在检查提醒服务…</p><div class="button-row"><button id="enable-reminders" class="primary-button" type="button" disabled>启用系统提醒</button><button id="test-reminder" class="secondary-button" type="button" hidden>发送测试通知</button><button id="sync-reminders" class="secondary-button" type="button" hidden>重新同步课表</button><button id="disable-reminders" class="danger-button" type="button" hidden>关闭提醒</button></div><p id="reminder-sync-time" class="small-note"></p><p class="small-note">启用时会将提醒所需的课程、作息、教室和推送订阅保存到提醒服务，PDF 和截图不上传。课表修改后自动同步；离线修改需联网后打开本页。关闭提醒会取消此设备订阅并删除云端副本。</p><p class="small-note">iPhone：需 iOS 16.4 或更新版本，先添加到主屏幕，再从主屏幕打开并允许通知。安卓：需要支持网页推送的浏览器和系统通知权限。</p></div>
       <div class="panel backup-panel"><h2>备份你的课表</h2><p>课表保存在本App。卸载或清理数据前请导出备份。原网页版课表需先导出JSON，再在App导入。</p><div class="button-row"><button id="export-json" class="secondary-button">导出 JSON 备份</button><button id="export-ics" class="secondary-button">导出到手机日历</button></div><p class="small-note">如需上课前的日历闹钟，可将课程导入支持 ICS 文件的手机日历，并在日历中设置提醒。每日 19:30 的明日课程通知在上方单独启用。</p></div>
+      <div class="panel"><h2>隐私与账号</h2><p><a href="./privacy.html">隐私政策与数据删除说明</a></p><p>登录后可在上方注销云端账号；本机课表可单独备份或清空。</p></div>
     </section>
   </main>
 </div>
@@ -235,5 +236,5 @@ window.campusGetSchedule=()=>JSON.parse(JSON.stringify(state));setTab(location.h
 })().catch(function(error){var el=document.getElementById("import-error");el.hidden=false;el.textContent="课表功能加载失败："+error.message+"。请刷新页面后重试。";});
 </script>
 <script type="module" src="./native-mobile.js"></script>
-<script type="module" src="./cloud-sync.js?v=1"></script>
+<script type="module" src="./cloud-sync.js?v=2"></script>
 </body></html>
