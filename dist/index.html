@@ -8,6 +8,7 @@
   <title>校园课表</title><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icon-192.png">
   <link rel="stylesheet" href="./styles.css?v=14">
   <link rel="stylesheet" href="./minimal.css?v=16">
+<style>.topbar{flex-wrap:wrap;gap:10px}#account-entry{white-space:nowrap;font-size:14px;padding:9px 14px}#cloud-account{scroll-margin-top:16px}#cloud-account input{max-width:100%}#cloud-account .button-row{flex-wrap:wrap}</style>
 </head>
 <body>
 <div class="app-shell">
@@ -19,10 +20,10 @@
       <button data-tab="import" class="nav-button"><span data-icon="upload"></span><span>导入课表</span></button>
       <button data-tab="settings" class="nav-button"><span data-icon="settings"></span><span>课表设置</span></button>
     </nav>
-    <div class="sidebar-footer"><span data-icon="shield"></span><span>无广告 · 本地保存</span></div>
+    <div class="sidebar-footer"><span data-icon="shield"></span><span>无广告 · 本机保存 / 账号同步</span></div>
   </aside>
   <main><div id="storage-status" class="notice" role="status" style="margin-top:16px">正在读取本设备课表…</div>
-    <header class="topbar"><span class="mobile-brand"><span class="brand-icon">课</span>校园课表</span><span class="desktop-label">我的学习日程</span><button id="install-help" class="text-button"><span data-icon="phone"></span>添加到主屏幕</button></header>
+    <header class="topbar"><span class="mobile-brand"><span class="brand-icon">课</span>校园课表</span><span class="desktop-label">我的学习日程</span><button id="account-entry" type="button" class="primary-button" aria-label="登录或注册账号">登录 / 注册</button><button id="install-help" class="text-button"><span data-icon="phone"></span>添加到主屏幕</button></header>
     <section id="week-view" class="view">
       <div class="page-heading"><div><span class="eyebrow">2026—2027 / 第一学期</span><h1>我的课表</h1></div><button id="add-course" class="primary-button"><span data-icon="plus"></span>添加课程</button></div>
       <div class="week-toolbar"><div class="week-switcher"><button id="previous-week" class="icon-button" aria-label="上一周"><span data-icon="left"></span></button><div><strong id="week-label">第 2 周</strong><span id="week-dates">按教学周查看课程</span></div><button id="next-week" class="icon-button" aria-label="下一周"><span data-icon="right"></span></button></div><div class="toolbar-actions"><button id="go-current" class="secondary-button">回到本周</button><label class="switch-label"><input id="weekends" type="checkbox" checked>显示周末</label></div></div>
@@ -239,10 +240,12 @@ function renderPreview(){if(!preview){$('#import-preview').innerHTML='';return;}
  $('#confirm-import').onclick=()=>{const courses=merge(state.courses,preview.courses);const count=courses.length-state.courses.length;let next={...state,courses};if(preview.backup){next={...next,semesterStart:preview.backup.semesterStart||state.semesterStart,periods:preview.backup.periods||state.periods};}if(save(next)){preview=null;renderPreview();toast(`已保存 ${count} 条安排到本设备，重复条目已跳过`);setTab('week');}};$('#import-preview').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openEditor(preview.courses.find(c=>c.id===b.dataset.edit),'preview'));$('#import-preview').querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{preview.courses=preview.courses.filter(c=>c.id!==b.dataset.remove);renderPreview();});}
 async function handleImportFile(event){const file=event.target.files[0];if(!file)return;$('#import-error').hidden=true;$('#import-progress').hidden=false;document.querySelectorAll('[data-import-file]').forEach(input=>input.disabled=true);$('#load-sample').disabled=true;preview=null;renderPreview();const progress=text=>$('#import-progress').textContent=text;try{progress('正在读取文件：'+file.name+'…');const {readFile}=await Promise.race([import('./importers.js?v=6'),new Promise((_,reject)=>setTimeout(()=>reject(Error('识别组件加载超时，请联网后刷新页面重试。')),20000))]);preview=await readFile(file,state,progress);renderPreview();}catch(e){$('#import-error').textContent=e.message||'无法读取文件，请换用 CSV 或手动添加课程';$('#import-error').hidden=false;}finally{$('#import-progress').hidden=true;document.querySelectorAll('[data-import-file]').forEach(input=>input.disabled=false);$('#load-sample').disabled=false;event.target.value='';}}
 document.querySelectorAll('[data-import-file]').forEach(input=>input.onchange=handleImportFile);
+window.campusApplyCloudSchedule=data=>{if(!data||!Array.isArray(data.courses)||data.courses.length>2000||!Array.isArray(data.periods)||data.periods.length!==12)throw Error('云端课表格式不正确');for(const c of data.courses){const error=validate(c);if(error)throw Error(error);}for(const p of data.periods)if(!Array.isArray(p)||p.length!==2||!p.every(t=>typeof t==='string'&&/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(t))||p[0]>=p[1])throw Error('云端作息格式不正确');if(data.semesterStart&&(!parseLocalDate(data.semesterStart)||parseLocalDate(data.semesterStart).getDay()!==1))throw Error('学期起始日期须为周一');return save({...state,semesterStart:data.semesterStart||'',periods:data.periods,courses:data.courses.map(normalize)});};
 window.campusGetSchedule=()=>JSON.parse(JSON.stringify(state));setTab(location.hash.slice(1)||'week');window.campusAppReady=true;window.dispatchEvent(new CustomEvent('campus-app-ready'));
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
 })().catch(function(error){var el=document.getElementById("import-error");el.hidden=false;el.textContent="课表功能加载失败："+error.message+"。请刷新页面后重试。";});
 </script>
 <script type="module" src="./reminders.js?v=12"></script>
+<script type="module" src="./cloud-sync.js?v=1"></script>
 </body></html>
