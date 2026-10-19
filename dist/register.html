@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#ffffff"><meta name="referrer" content="no-referrer">
+<title>注册账号 · 校园课表</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f7f8f7;color:#242624;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:460px;margin:0 auto;padding:calc(24px + env(safe-area-inset-top)) 22px calc(32px + env(safe-area-inset-bottom))}.back{color:#5e665f;text-decoration:none;font-size:15px;display:inline-block;margin-bottom:32px}.brand{display:flex;gap:10px;align-items:center;font-weight:650}.brand img{width:30px;height:30px}h1{font-size:30px;margin:24px 0 8px;line-height:1.3}.intro{color:#6b726c;margin:0 0 28px}.card{background:#fff;border:1px solid #e3e7e3;border-radius:22px;padding:24px}label{display:block;margin:0 0 18px;font-weight:550}input:not([type=checkbox]){display:block;width:100%;margin-top:8px;border:1px solid #d8dfd9;border-radius:12px;padding:13px 12px;background:white;color:#222;font:inherit;min-height:50px}input:focus{outline:2px solid #668477;outline-offset:2px}.hint{font-size:13px;color:#727970;display:block;margin-top:5px;font-weight:400}.consent{display:flex;gap:10px;font-size:13px;font-weight:400;line-height:1.7;color:#626a63}.consent input{flex:0 0 17px;width:17px;height:17px;margin:3px 0 0;accent-color:#263e32}a{color:#305d47}button,.button{font:inherit;font-weight:600;min-height:50px;border:0;border-radius:12px;width:100%;background:#242624;color:#fff;padding:13px 16px;display:block;text-align:center;text-decoration:none}button:disabled{opacity:.55;cursor:wait}.footer{text-align:center;color:#747b74;font-size:14px;margin-top:22px}.footer a{font-weight:600;margin-left:5px}.status{padding:12px;border-radius:10px;background:#f0f5f1;margin:0 0 16px;font-size:14px;overflow-wrap:anywhere}.error{background:#fff0ed;color:#a33f2d}.success-icon{font-size:32px;color:#356b4e;margin-bottom:12px}.success h2{margin:0 0 12px;font-size:22px}.success p{color:#656e66}.email{font-weight:600;color:#253e31;overflow-wrap:anywhere}[hidden]{display:none!important}
+</style>
+<script src="./register.js?v=1" defer></script>
+</head><body><main>
+<a class="back" href="./index.html#settings">‹ 返回登录</a>
+<div class="brand"><img src="./icon.svg" alt="">校园课表</div>
+<header id="register-heading"><h1>创建账号</h1><p class="intro">保存自己的云端课表，换设备也能找回来。</p></header>
+<section class="card" aria-label="账号注册">
+<div id="registration-status" class="status" role="status" aria-live="polite" hidden></div>
+<form id="registration-form">
+<label>邮箱<input id="register-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="请输入常用邮箱" required maxlength="254"></label>
+<label>密码<input id="register-password" name="password" type="password" autocomplete="new-password" placeholder="设置登录密码" minlength="8" maxlength="128" required><span class="hint">至少 8 位，建议同时包含字母和数字。</span></label>
+<label>确认密码<input id="register-confirm" name="confirm" type="password" autocomplete="new-password" placeholder="再次输入密码" minlength="8" maxlength="128" required></label>
+<label class="consent"><input id="register-consent" name="consent" type="checkbox" required><span>我已阅读<a href="./privacy.html">隐私政策</a>，同意将账号及主动同步的课表交由新加坡区域的云服务处理。</span></label>
+<button id="register-submit" type="submit">注册账号</button>
+</form>
+<div id="registration-success" class="success" hidden>
+<div class="success-icon" aria-hidden="true">✉</div><h2 id="registration-result-title">请确认你的邮箱</h2>
+<p id="registration-result-text">注册请求已提交。请检查下方邮箱的收件箱和垃圾邮件，点击最新确认邮件中的链接。</p><p id="registration-email" class="email"></p>
+<p>完成邮箱确认后，返回课表，使用邮箱和刚才设置的密码登录。</p>
+<a class="button" href="./index.html#settings">返回登录</a>
+</div>
+</section>
+<p class="footer">已有账号？<a href="./index.html#settings">去登录</a></p>
+<p class="footer">暂不注册也可以使用本机课表。</p>
+</main></body></html>
