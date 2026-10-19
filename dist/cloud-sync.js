@@ -5,14 +5,25 @@ const SESSION='campus-cloud-session-v1';
 let session=null,revision=null,busy=false,pending=null;
 try{session=JSON.parse(sessionStorage.getItem(SESSION)||'null')}catch{}
 function persist(){try{if(session)sessionStorage.setItem(SESSION,JSON.stringify(session));else sessionStorage.removeItem(SESSION)}catch{}}
+let cooldownUntil=0;
+function checkBusyResponse(r){
+ if(r.status!==429&&r.status<500)return;
+ const raw=r.headers?.get("Retry-After");
+ const seconds=raw&&/^\d+$/.test(raw)?Number(raw):raw?(Date.parse(raw)-Date.now())/1000:30;
+ cooldownUntil=Date.now()+Math.max(5,Math.min(300,Number.isFinite(seconds)?seconds:30))*1000;
+ throw Error("云服务繁忙，请稍后重试。本机课表仍可使用。");
+}
 async function request(path,{method='GET',body,auth=true}={}){
+ if(Date.now()<cooldownUntil)throw Error('请等待 '+Math.ceil((cooldownUntil-Date.now())/1000)+' 秒后再试，本机课表仍可使用。');
  if(auth&&!session)throw Error('请先登录');
  if(auth&&session.expires_at*1000<Date.now()+60000){
   const r=await fetch(URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:session.refresh_token}),signal:AbortSignal.timeout(15000)});
-  if(!r.ok){session=null;revision=null;persist();throw Error('登录已过期，请重新登录')}
+  checkBusyResponse(r);
+  if(!r.ok){if([400,401,403].includes(r.status)){session=null;revision=null;persist();throw Error('登录已过期，请重新登录')}throw Error('登录服务暂时不可用，请稍后重试')}
   session=await r.json();persist();
  }
  const r=await fetch(URL+path,{method,headers:{apikey:KEY,'Content-Type':'application/json',...(auth?{Authorization:'Bearer '+session.access_token}:{})},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(20000)});
+ checkBusyResponse(r);
  const v=await r.json().catch(()=>null);
  if(!r.ok){const m=v?.message||v?.msg||v?.error_description||'';if(m.includes('REVISION_CONFLICT'))throw Error('云端课表已更新。请先下载云端版本，再修改上传。');if(m.includes('ACCOUNT_DISABLED'))throw Error('账号已停用，请联系管理员');throw Error(m==='Invalid login credentials'?'邮箱或密码不正确':m==='Email not confirmed'?'请先在邮箱中确认注册链接':r.status===429?'请求过于频繁，请稍后再试':'服务请求失败，请检查网络或账号状态')}
  return v;
