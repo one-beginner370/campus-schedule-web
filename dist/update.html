@@ -1,0 +1,23 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>更新课表 · 校园课表</title><style>body{margin:0;padding:28px 20px;font:17px/1.8 system-ui;background:#f5f7f5;color:#252b26}main{max-width:440px;margin:10vh auto;background:white;border:1px solid #e0e6e1;border-radius:22px;padding:28px}h1{font-size:26px}button{display:block;width:100%;background:#242624;color:white;border:0;border-radius:12px;padding:15px;font:600 16px system-ui}button:disabled{opacity:.6}p{color:#647066}a{color:#2d6447}.error{color:#a53b29}</style></head><body><main><h1>更新校园课表</h1><p>刷新后使用新的登录和注册入口。本机课表和云端账号不会被清空。</p><p id="status" role="status" aria-live="polite">请点击下方按钮。</p><button id="update" type="button">更新并打开注册界面</button><p><a id="direct" href="./register.html?v=23">直接打开注册界面</a></p></main><script>
+const app=new URLSearchParams(location.search).get('next')==='app';
+const destination=app?'./index.html?v=23#settings':'./register.html?v=23';
+const button=document.getElementById('update'),status=document.getElementById('status');
+if(app){button.textContent='刷新课表';document.getElementById('direct').textContent='直接打开课表';}
+document.getElementById('direct').href=destination;
+button.addEventListener('click',async()=>{
+ button.disabled=true;status.className='';status.textContent='正在获取更新，请保持联网…';
+ try{
+  const response=await fetch(destination.split('#')[0],{cache:'reload',signal:AbortSignal.timeout(20000)});
+  if(!response.ok)throw Error('更新页面暂时无法加载，请稍后重试。');
+  if('serviceWorker'in navigator){
+   const registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});await registration.update();
+   const worker=registration.installing||registration.waiting;
+   if(worker&&worker.state!=='activated')await new Promise((resolve,reject)=>{
+    const timer=setTimeout(()=>reject(Error('更新仍在准备，请稍后再试。')),20000);
+    worker.addEventListener('statechange',()=>{if(worker.state==='activated'){clearTimeout(timer);resolve();}else if(worker.state==='redundant'){clearTimeout(timer);reject(Error('更新暂未完成，请重试。'));}});
+   });
+  }
+  status.textContent='更新完成，正在打开…';location.replace(destination);
+ }catch(error){status.textContent=error.name==='TimeoutError'?'网络连接超时，请重试，或点击“直接打开注册界面”。':error.message;status.className='error';button.disabled=false;}
+});
+</script></body></html>

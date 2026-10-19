@@ -23,7 +23,7 @@
     <div class="sidebar-footer"><span data-icon="shield"></span><span>无广告 · 本机保存 / 账号同步</span></div>
   </aside>
   <main><div id="storage-status" class="notice" role="status" style="margin-top:16px">正在读取本设备课表…</div>
-    <header class="topbar"><span class="mobile-brand"><span class="brand-icon">课</span>校园课表</span><span class="desktop-label">我的学习日程</span><button id="account-entry" type="button" class="primary-button" aria-label="登录或注册账号">登录 / 注册</button><button id="install-help" class="text-button"><span data-icon="phone"></span>添加到主屏幕</button></header>
+    <header class="topbar"><span class="mobile-brand"><span class="brand-icon">课</span>校园课表</span><span class="desktop-label">我的学习日程</span><button id="account-entry" type="button" class="primary-button" aria-label="登录账号">登录</button><a id="registration-entry" class="secondary-button" href="./register.html?v=23" style="display:inline-flex;align-items:center;text-decoration:none;white-space:nowrap;font-size:14px;padding:9px 14px">注册账号</a><button id="install-help" class="text-button"><span data-icon="phone"></span>添加到主屏幕</button></header>
     <section id="week-view" class="view">
       <div class="page-heading"><div><span class="eyebrow">2026—2027 / 第一学期</span><h1>我的课表</h1></div><button id="add-course" class="primary-button"><span data-icon="plus"></span>添加课程</button></div>
       <div class="week-toolbar"><div class="week-switcher"><button id="previous-week" class="icon-button" aria-label="上一周"><span data-icon="left"></span></button><div><strong id="week-label">第 2 周</strong><span id="week-dates">按教学周查看课程</span></div><button id="next-week" class="icon-button" aria-label="下一周"><span data-icon="right"></span></button></div><div class="toolbar-actions"><button id="go-current" class="secondary-button">回到本周</button><label class="switch-label"><input id="weekends" type="checkbox" checked>显示周末</label></div></div>
@@ -248,5 +248,6 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catc
 })().catch(function(error){var el=document.getElementById("import-error");el.hidden=false;el.textContent="课表功能加载失败："+error.message+"。请刷新页面后重试。";});
 </script>
 <script type="module" src="./reminders.js?v=13"></script>
-<script type="module" src="./cloud-sync.js?v=3"></script>
+<script type="module" src="./cloud-sync.js?v=4"></script>
+<script src="./updates.js?v=1" defer></script>
 </body></html>
