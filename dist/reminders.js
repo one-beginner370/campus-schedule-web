@@ -98,18 +98,33 @@ async function test(){
  busy=true;status('正在发送测试通知…');
  try{if(syncTask)await syncTask;await upload(schedule());const result=await api('test',{method:'POST',body:{deviceId:identity.id}});status(result.message);}catch(error){status(error.message,true);}finally{busy=false;render();}
 }
+async function connect(){
+ busy=true;server=null;status('正在检查提醒服务…');
+ try{
+  const response=await fetch('./push-config.json',{cache:'no-store',signal:AbortSignal.timeout(15000)});
+  if(!response.ok)throw Error('提醒配置读取失败');config=await response.json();
+  if(config.backendUrl){
+   const url=new URL(config.backendUrl);if(url.protocol!=='https:')throw Error('提醒服务地址必须使用 HTTPS');config.backendUrl=url.href.replace(/\/$/,'');
+   if(supported()){
+    server=await api('config');if(!server.ready||!/^[A-Za-z0-9_-]{87}$/.test(server.publicKey||''))throw Error('提醒服务配置不完整');
+    registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
+    if(identity?.enabled){if(Notification.permission!=='granted'){identity.enabled=false;persist();await rememberConnection(null);}else{pending=schedule();await syncPending();}}
+   }
+  }
+  if(!identity?.dirty)status('');
+ }catch(error){
+  const network=/Load failed|Failed to fetch|NetworkError|fetch failed|AbortError|TimeoutError/i.test(error.message+' '+error.name);
+  status(network?'连接提醒服务失败。请检查网络后点击“重新连接提醒服务”。':error.message+'。请稍后重新连接。',true);
+ }finally{busy=false;render();$('retry-reminders').hidden=!errorState;}
+}
 async function init(){
+ const retry=document.createElement('button');retry.id='retry-reminders';retry.type='button';retry.className='secondary-button';retry.textContent='重新连接提醒服务';retry.hidden=true;
+ $('enable-reminders').after(retry);retry.onclick=connect;
  $('enable-reminders').onclick=enable;$('disable-reminders').onclick=disable;$('test-reminder').onclick=test;
  $('sync-reminders').onclick=()=>{try{pending=schedule();syncPending();}catch(error){status(error.message,true);}};
  window.addEventListener('campus-schedule-saved',()=>{if(identity?.enabled){identity.dirty=true;persist();try{pending=schedule();syncPending();}catch(error){status(error.message,true);}}});
- render();
- try{
-  const response=await fetch('./push-config.json',{cache:'no-store'});if(!response.ok)throw Error('提醒配置读取失败');config=await response.json();
-  if(config.backendUrl){const url=new URL(config.backendUrl);if(url.protocol!=='https:')throw Error('提醒服务地址必须使用 HTTPS');config.backendUrl=url.href.replace(/\/$/,'');server=await api('config');if(!/^[A-Za-z0-9_-]{87}$/.test(server.publicKey||''))throw Error('提醒服务配置不完整');}
-  if(supported()&&config.backendUrl){registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});if(identity?.enabled){if(Notification.permission!=='granted'){identity.enabled=false;persist();await rememberConnection(null);}else{pending=schedule();await syncPending();}}}
-  render();
- }catch(error){status(error.message+'，当前不能确认提醒服务可用。',true);}
- window.addEventListener('online',()=>{if(identity?.enabled){try{pending=schedule();syncPending();}catch{}}});
+ render();await connect();
+ window.addEventListener('online',()=>{if(!server&&!busy){connect();return;}if(identity?.enabled){try{pending=schedule();syncPending();}catch{}}});
  navigator.serviceWorker?.addEventListener('message',event=>{if(event.data?.type==='campus-push-changed'&&identity?.enabled){try{pending=schedule();syncPending();}catch{}}});
 }
 if(window.campusAppReady)init();else window.addEventListener('campus-app-ready',init,{once:true});

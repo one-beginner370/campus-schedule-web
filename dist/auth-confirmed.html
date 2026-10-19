@@ -1,0 +1,9 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>邮箱确认 · 校园课表</title><style>body{font:17px/1.8 system-ui;background:#f5f8f6;color:#222;margin:0;padding:32px 20px}main{max-width:540px;margin:10vh auto;background:white;padding:28px;border-radius:20px}a{display:inline-block;background:#245d49;color:white;text-decoration:none;padding:10px 18px;border-radius:10px}</style></head><body><main><h1 id="title">返回校园课表</h1><p id="message">完成邮件中的邮箱确认后，请回到课表输入邮箱和注册密码登录。已经确认过的邮件链接不需要重复点击。</p><a href="./index.html#settings">打开课表登录页面</a><p>如果你在安卓 App 中注册，请关闭此页面，返回 App 登录。</p></main><script>
+const params=new URLSearchParams(location.hash.slice(1));
+const success=params.has('access_token')&&params.get('type')==='signup';
+const failed=params.has('error')||params.has('error_code');
+// A confirmation return page never stores or forwards login tokens.
+history.replaceState(null,'',location.pathname);
+if(success){document.getElementById('title').textContent='邮箱已确认';document.getElementById('message').textContent='请返回课表，输入刚才注册的邮箱和密码登录。';}
+if(failed){document.getElementById('title').textContent='确认链接不可用';document.getElementById('message').textContent='链接可能已使用或过期。如果之前已经确认，请直接返回登录；尚未确认时，请重新请求确认邮件。';}
+</script></body></html>

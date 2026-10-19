@@ -1,3 +1,13 @@
+-- Runtime keys remain in Vault. This invoker function is callable only by service_role.
+create or replace function public.get_reminder_runtime_config()
+returns jsonb language sql security invoker set search_path='' as $$
+ select jsonb_build_object(
+ 'publicKey',(select decrypted_secret from vault.decrypted_secrets where name='campus_reminder_vapid_public'),
+ 'privateKey',(select decrypted_secret from vault.decrypted_secrets where name='campus_reminder_vapid_private'),
+ 'cronSecret',(select decrypted_secret from vault.decrypted_secrets where name='campus_reminder_cron_secret'));
+$$;
+revoke all on function public.get_reminder_runtime_config() from public,anon,authenticated;
+grant execute on function public.get_reminder_runtime_config() to service_role;
 create extension if not exists pg_cron with schema pg_catalog;
 create extension if not exists pg_net with schema extensions;
 -- Primary attempt: 11:30 UTC = 19:30 Asia/Shanghai. The following minutes

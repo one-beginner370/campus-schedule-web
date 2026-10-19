@@ -21,16 +21,17 @@ async function vault(name,value){
 }
 try{
  const project=await api('');if(project.id!==ref&&project.ref!==ref)throw Error('Project identity mismatch');
- const secrets=await api('/secrets');
- const hasPublic=secrets.some(s=>s.name==='VAPID_PUBLIC_KEY'),hasPrivate=secrets.some(s=>s.name==='VAPID_PRIVATE_KEY');
+ const existingKeys=await query("select name from vault.secrets where name in ('campus_reminder_vapid_public','campus_reminder_vapid_private')");
+ const hasPublic=existingKeys.some(s=>s.name==='campus_reminder_vapid_public'),hasPrivate=existingKeys.some(s=>s.name==='campus_reminder_vapid_private');
  if(hasPublic!==hasPrivate)throw Error('Incomplete VAPID setup. Refusing to rotate existing push keys.');
- // Existing VAPID keys must be preserved: rotating them invalidates subscriptions.
- if(!hasPrivate){const vapid=webpush.generateVAPIDKeys();await api('/secrets',{method:'POST',body:[{name:'VAPID_PUBLIC_KEY',value:vapid.publicKey},{name:'VAPID_PRIVATE_KEY',value:vapid.privateKey}]});}
+ if(!hasPrivate){const vapid=webpush.generateVAPIDKeys();await vault('campus_reminder_vapid_public',vapid.publicKey);await vault('campus_reminder_vapid_private',vapid.privateKey);}
  let cronSecret;
  const existingCron=await query("select decrypted_secret from vault.decrypted_secrets where name='campus_reminder_cron_secret'");
  cronSecret=existingCron[0]?.decrypted_secret||randomBytes(32).toString('base64url');
- await api('/secrets',{method:'POST',body:[{name:'CRON_SECRET',value:cronSecret}]});
+ await vault('campus_reminder_cron_secret',cronSecret);
  await query(await readFile(resolve(root,'supabase/migrations/202610100001_reminders.sql'),'utf8'));
+ const cronSQL=await readFile(resolve(root,'supabase/install-cron.sql'),'utf8');
+ await query(cronSQL.split('create extension')[0]);
  // Single-file bundle avoids multipart relative-path differences in the API.
  const files=['schedule.js','handler.js','store.js'];
  const shared=await Promise.all(files.map(async name=>(await readFile(resolve(root,'supabase/functions/_shared/'+name),'utf8')).replace(/^import .*;\s*$/gm,'').replace(/^export /gm,'')));
